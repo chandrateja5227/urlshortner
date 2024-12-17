@@ -3,25 +3,32 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"urlshortner/urlshort"
 )
 
 func main() {
 	mux := defaultMux()
-
-
-	// Build the YAMLHandler using the mapHandler as the
-	// fallback
-	yaml := `
-- path: /urlshort
-  url: https://github.com/chandrateja5227/urlshortner
-- path: /urlshort-readme
-  url: https://github.com/chandrateja5227/urlshortner/blob/main/README.md
-`
-	yamlHandler, err := urlshort.YAMLHandler([]byte(yaml), mux)
+	ymlfile, err := os.ReadFile("Mapping.yml")
 	if err != nil {
 		panic(err)
 	}
+
+	yamlHandler, err := urlshort.YAMLHandler(ymlfile, mux)
+	if err != nil {
+		panic(err)
+	}
+
+	/*jsonfile , err :=os.ReadFile("Mapping.json")
+	if err != nil {
+		panic(err)
+	}
+
+	jsonHandler, err := urlshort.JSONHandler(jsonfile, mux)
+	if err != nil {
+		panic(err)
+	}*/
+
 	fmt.Println("Starting the server on :8080")
 	http.ListenAndServe(":8080", yamlHandler)
 }

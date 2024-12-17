@@ -55,8 +55,27 @@ func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	
 }
 
+func JSONHandler(json []byte, fallback http.Handler) (http.HandlerFunc, error) {
+	pathUrlJson:=[]pathUrlJson{}
+	err:=yaml.Unmarshal(json,&pathUrlJson)
+	if err!=nil{
+		return nil,err
+	}
+	pathsToUrls:=make(map[string]string)
+	for _, pu := range pathUrlJson {
+		pathsToUrls[pu.Path]=pu.URL
+	}
+	return MapHandler(pathsToUrls,fallback),nil
+	
+}
+
 type pathUrl struct {	
 	Path string `YAML:"path"`
 	URL string  `YAML:"url"`
+}
+
+type pathUrlJson struct {
+	Path string `json:"path"`
+	URL string  `json:"url"`
 }
 
